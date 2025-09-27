@@ -8,18 +8,31 @@ This project aims to analyze a **hypothetical transaction** database in a **card
 ---
 
 ## 📁 Project Structure
+
 ├── data/
+
 │   ├── raw/
+
 │   │   └── transactional-sample.csv        # Provided database
+
 │   └── processed/
-│       ├── device_worst.csv                # Device blacklist
-│       ├── merchant_worst.csv              # Merchant blacklist
-│       ├── user_worst.csv                  # User blacklist
-│       ├── train_processed.csv             # Processed training base
-│       └── test_processed.csv              # Processed test base
+
+│   │   └──  device_worst.csv                # Device blacklist
+
+│   │   └──  merchant_worst.csv              # Merchant blacklist
+
+│   │   └── user_worst.csv                  # User blacklist
+
+│   │   └──  train_processed.csv             # Processed training base
+
+│   │   └── test_processed.csv              # Processed test base
+
 ├── notebooks/
+
 │   ├── eda_feature_engineering.ipynb       # Exploration and feature engineering notebook
+
 │   └── train_model.ipynb                   # Notebook for ML model training and evaluation
+
 └── README.md                               # This document
 
 ---
@@ -217,18 +230,31 @@ Este projeto tem como objetivo analisar uma base de **transações hipotéticas*
 ---
 
 ## 📁 Estrutura do Projeto
+
 ├── data/
+
 │   ├── raw/
+
 │   │   └── transactional-sample.csv        # Base de dados recebida
+
 │   └── processed/
+
 │       ├── device_worst.csv                # Blacklist de dispositivos
+
 │       ├── merchant_worst.csv              # Blacklist de comerciantes
+
 │       ├── user_worst.csv                  # Blacklist de usuários
+
 │       ├── train_processed.csv             # Base de treino processada
+
 │       └── test_processed.csv              # Base de teste processada
+
 ├── notebooks/
+
 │   ├── eda_feature_engineering.ipynb       # Exploration and feature engineering notebook
+
 │   └── train_model.ipynb                   # Notebook for ML model training and evaluation
+
 └── README.md                               # This document
 
 ---
