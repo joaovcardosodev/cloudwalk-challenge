@@ -7,14 +7,14 @@ Este projeto tem como objetivo analisar uma base de **transações hipotéticas*
 
 ## 📁 Estrutura do Projeto
 ├── data
-    ├── raw
-        ├── transactional-sample.csv # Base de dados fornecida
-    ├── processed
-        ├── test_processed.csv # Base de teste processada
-        ├── train_processed.csv # Base de treino processada
+  ├── raw
+      ├── transactional-sample.csv # Base de dados fornecida
+  ├── processed
+      ├── test_processed.csv # Base de teste processada
+      ├── train_processed.csv # Base de treino processada
 ├── notebooks
-    ├── eda_feature_engineering.ipynb # Notebook de exploração de feature engineering
-    ├── train_model.ipynb # Notebook para treinamento e avaliação de modelos ML
+  ├── eda_feature_engineering.ipynb # Notebook de exploração de feature engineering
+  ├── train_model.ipynb # Notebook para treinamento e avaliação de modelos ML
 ├── README.md # Este documento
 
 
@@ -43,24 +43,26 @@ O desafio consiste em:
 - `has_cbk`: indica se houve chargeback (1 = fraude)  
 
 ### 🔍 Perguntas investigadas
-- Fraudes ocorrem com **valores médios mais altos**?  
-- Existem **merchants**, **users** ou **devices** com alta concentração de fraudes?  
-- Há **padrões temporais** (dia da semana, período do dia)?  
-- Comportamento da transação é **coerente com o histórico do usuário**?
+- Fraudes ocorrem com **valores médios mais altos**?
+  R: Sim, pode-se constatar que a média dos valores das transações fraudulentas é mais que o dobro do que transações normais
 
-### 📈 Principais análises
-- Distribuição de `transaction_amount` por `has_cbk`
-- Taxa de fraude por `merchant_id`, `user_id`, `device_id`
-- Criação de variáveis derivadas:
-  - Média do `transaction_amount` por dia da semana, período do dia e por usuário
-  - Razão entre valor atual e médias históricas
-  - Frequência de transações por usuário/dia
+- Existem **merchants**, **users** ou **devices** com alta concentração de fraudes?
+  R: Sim, existe um público pequeno de cada um desses ids que concentra mais que 70% das fraudes
+
+- Há **padrões temporais** (dia da semana, período do dia)?  
+  R: Nota-se um padrão de fraudes concentradas a noite e nas sextas-feiras.
+
+- Comportamento da transação é **coerente com o histórico do usuário**?
+  R: Existe claramente um desvio do comportamento padrão do usuário para transações fraudulentas.
+
+- O **volume de transações** está correlacionado com o percentual de fraudes?
+  R: Aparentemente não existe relação entre o volume de transações e o percentual de fraudes, mas ficaria mais assertivo definir analisando um dataset maior.
 
 ---
 
-## ⚙️ 2. Engenharia de Features
+### ⚙️ Engenharia de Features
 
-### 🧮 Variáveis criadas
+#### 🧮 Variáveis criadas
 | Feature | Descrição |
 |----------|------------|
 | `transaction_hour` | Hora da transação |
@@ -80,40 +82,72 @@ Essas variáveis ajudam a capturar **desvios de comportamento**, fundamentais na
 
 ---
 
+## 💰 2. Enriquecimento de Dados
+
+Visando melhorar a detecção de fraudes sugiro o enriquecimento da base de dados com as seguintes variáveis:
+
+- IP address (geolocalização, múltiplos IPs por usuário)
+- BIN do cartão (bandeira, país)
+- Histórico do usuário (idade da conta, frequência de uso)
+
+---
+
 ## 🤖 3. Modelagem
 
+Utilizei métodos de **Machine Learning** para capturar padrões de operações fraudulentas dentro dos dados disponíveis.
+Foram testados três algoritmos de ML sendo eles:
+
+- Isolation Forest
+- XGBoost
+- Random Forest
+
+Usei apenas modelos de árvores já que são os mais utilizados dentro do mercado financeiro e têm melhor desempenho com dados com alta colinearidade.
+
+O algortimo que obteve o melhor desempenho foi o **XGBoost** com as seguintes métricas (base de teste):
+
+### Métricas basicas:
+
+| Métrica | Valor |
+-------------------
+| `Accuracy` | 0.9313 |
+| `Precision` | 0.9048 |
+| `Recall` | 0.4872 |
+| `F1-score` | 0.6333 |
+| `AUC` | 0.9121 |
+| `KS` | 0.8781 |
+
+### Matriz de Confusão
+
+![alt text](image.png)
+
+### ROC Curve
+
+![alt text](image-1.png)
 
 ---
 
-## 🧩 4. Insights Encontrados (exemplos)
-- A média de valor de transações fraudulentas é **2x maior** que transações normais.  
-- Alguns **merchants, devices e users** concentram grande parte das fraudes.  
-- Transações **de madrugada** apresentaram valor médio **superior** ao padrão global.  
-
----
-
-## 🧱 5. Recomendações Antifraude
+## 🧱 4. Recomendações Antifraude
 
 ### 🧭 Curto Prazo (Regras)
-- Bloquear transações com `amount` muito acima da média do usuário.
-- Revisar merchants com **alta taxa de chargebacks**.
-- Bloquear ou revisar **devices** reincidentes.
+- Bloquear transações com `transaction_amount` muito acima da média do usuário.
+- Revisar merchants com **alta taxa de chargebacks** (blacklist).
+- Bloquear ou revisar **devices** reincidentes (blacklist).
 
 ### 🤖 Médio Prazo (Modelagem)
-- Treinar **modelo supervisionado** (Logistic Regression / XGBoost) com as features criadas.
+- Treinar **modelo supervisionado** (Isolation Forest / XGBoost) com as features criadas.
 - Utilizar **sistema de score de risco** com thresholds.
 
 ### 🧠 Longo Prazo (Arquitetura)
 - **Pipeline real-time** com:
   1. Ingestão da transação
-  2. Enriquecimento (IP, geolocalização, histórico)
+  2. Enriquecimento (IP, geolocalização, histórico, blacklists)
   3. Cálculo de score
   4. Decisão automática (aprovar / revisar / bloquear)
 - **Feedback loop** com chargebacks para re-treinar modelos.
 
 ---
 
-## 🏦 6. Contexto da Indústria de Pagamentos
+## 🏦 5. Contexto da Indústria de Pagamentos
 
 ### 💰 Fluxo Financeiro
 1. **Cliente** realiza a compra  
@@ -150,17 +184,17 @@ Essas variáveis ajudam a capturar **desvios de comportamento**, fundamentais na
 - **Python 3.11**
 - **Pandas / NumPy** (análise de dados)
 - **Matplotlib / Seaborn** (visualização)
-- **Scikit-learn** (IsolationForest, pré-processamento)
+- **Scikit-learn** (ML, pré-processamento)
 
 ---
 
 ## 🧾 Conclusão
-A análise demonstrou que **padrões estatísticos simples**, combinados com **modelagem de anomalias** e **regras de negócio**, são capazes de identificar **comportamentos potencialmente fraudulentos**.  
+A análise demonstrou que **padrões estatísticos simples**, combinados com **modelos de machine learning** e **regras de negócio**, são capazes de identificar **comportamentos potencialmente fraudulentos**.  
 O próximo passo é a **integração desses insights** em um **pipeline antifraude operacional**, com **modelos supervisionados** e **revisão contínua baseada em chargebacks**.
 
 ---
 
 ## 👤 Autor
-**Seu Nome**  
-📧 [seu.email@email.com]  
-💼 [LinkedIn / GitHub se quiser adicionar]
+**João Victor Cardoso**  
+📧 [joaovictorcs.20@gmail.com]  
+💼 [[LinkedIn](https://www.linkedin.com/in/jo%C3%A3o-victor-cardoso/) / [GitHub](https://github.com/joaovcardosodev) ]
