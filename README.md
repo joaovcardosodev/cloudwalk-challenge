@@ -1,3 +1,214 @@
+**(EN)**
+
+# 🕵️‍♂️ Risk Analyst Case – Suspicious Behavior Detection and Anti-fraud Solution
+
+## 📌 Objective
+This project aims to analyze a **hypothetical transaction** database in a **card-not-present (CNP)** environment, identify **suspicious behaviors** and propose **anti-fraud solutions**.
+
+---
+
+## 📁 Project Structure
+├── data/
+│ ├── raw/
+| │ ├── transactional-sample.csv # Provided database
+│ ├── processed/
+| │ ├── device_worst.csv # Device blacklist
+| │ ├── merchant_worst.csv # Merchant blacklist
+| │ ├── user_worst.csv # User blacklist
+| │ ├── train_processed.csv # Processed training base
+| │ ├── train_processed.csv # Processed training base
+├── notebooks/
+│ ├── eda_feature_engineering.ipynb # Exploration and feature engineering notebook
+│ ├── train_model.ipynb # Notebook for ML model training and evaluation
+├── README.md # This document
+
+---
+
+## 🧠 Challenge Description
+The challenge consists of:
+1. Analyzing the dataset to identify **fraud patterns**.
+2. Presenting **insights and hypotheses** about suspicious behaviors.
+3. Suggesting **additional data** useful for strengthening fraud detection.
+4. Proposing **preventive measures** and a **conceptual anti-fraud system**.
+5. Explaining **flows and roles** in the payments industry.
+
+---
+
+## 📊 1. Exploratory Data Analysis (EDA)
+
+### 📌 Main variables
+- `transaction_id`: transaction identifier
+- `card_number`: card number
+- `transaction_date`: transaction timestamp
+- `user_id`: cardholder identifier
+- `device_id`: device identifier
+- `merchant_id`: merchant identifier
+- `transaction_amount`: transaction amount
+- `has_cbk`: indicates if there was a chargeback (1 = fraud)
+
+### 🔍 Questions investigated
+- Do frauds occur with **higher average values**?
+  A: Yes, it can be confirmed that the average value of fraudulent transactions is more than double that of normal transactions
+
+- Are there **merchants**, **users** or **devices** with high fraud concentration?
+  A: Yes, there is a small audience of each of these ids that concentrates more than 70% of frauds
+
+- Are there **temporal patterns** (day of the week, time of day)?
+  A: A pattern of frauds concentrated at night and on Fridays is noted.
+
+- Is transaction behavior **consistent with user history**?
+  A: There is clearly a deviation from the user's standard behavior for fraudulent transactions.
+
+- Is **transaction volume** correlated with fraud percentage?
+  A: Apparently there is no relationship between transaction volume and fraud percentage, but it would be more assertive to define by analyzing a larger dataset.
+
+---
+
+### ⚙️ Feature Engineering
+
+#### 🧮 Created variables
+| Feature | Description |
+|----------|------------|
+| `transaction_hour` | Transaction hour |
+| `transaction_day` | Transaction day of the week |
+| `transaction_period` | Morning, Afternoon, Night, Dawn |
+| `mean_amount_user` | User average |
+| `median_amount_user` | User median |
+| `ratio_to_user_mean` | Ratio between transaction and user average |
+| `diff_from_user_mean` | Difference from user average X transaction value|
+| `mean_amount_day` | Global average by day of the week |
+| `median_amount_day` | Global median by day of the week |
+| `diff_from_mean_day` | Difference from day average X transaction value|
+| `ratio_to_mean_day` | Ratio to day average |
+| `mean_amount_period` | Global average by period |
+
+These variables help capture **behavioral deviations**, fundamental in fraud detection.
+
+---
+
+## 💰 2. Data Enrichment
+
+Aiming to improve fraud detection, I suggest enriching the database with the following variables:
+
+- IP address (geolocation, multiple IPs per user)
+- Card BIN (brand, country)
+- User history (account age, usage frequency)
+
+---
+
+## 🤖 3. Modeling
+
+I used **Machine Learning** methods to capture fraudulent operation patterns within the available data.
+Three ML algorithms were tested:
+
+- Isolation Forest
+- XGBoost
+- Random Forest
+
+I only used tree models as they are the most used in the financial market and have better performance with data with high collinearity.
+
+The algorithm that obtained the best performance was **XGBoost** with the following metrics (test base):
+
+### Basic metrics:
+
+| Metric | Value |
+| --------|---------- |
+| `Accuracy` | 0.9313 |
+| `Precision` | 0.9048 |
+| `Recall` | 0.4872 |
+| `F1-score` | 0.6333 |
+| `AUC` | 0.9121 |
+| `KS` | 0.8781 |
+
+### Confusion Matrix
+
+![alt text](image.png)
+
+### ROC Curve
+
+![alt text](image-1.png)
+
+---
+
+## 🧱 4. Anti-fraud Recommendations
+
+### 🧭 Short Term (Rules)
+- Block transactions with `transaction_amount` much above user average.
+- Review merchants with **high chargeback rates** (blacklist).
+- Block or review **repeat devices** (blacklist).
+
+### 🤖 Medium Term (Modeling)
+- Train **supervised model** (Isolation Forest / XGBoost) with created features.
+- Use **risk score system** with thresholds.
+
+### 🧠 Long Term (Architecture)
+- **Real-time pipeline** with:
+  1. Transaction ingestion
+  2. Enrichment (IP, geolocation, history, blacklists)
+  3. Score calculation
+  4. Automatic decision (approve / review / block)
+- **Feedback loop** with chargebacks to retrain models.
+
+The use case is located in the **train_model.csv** notebook with cut-point analysis and actual values
+
+---
+
+## 🏦 5. Payment Industry Context
+
+### 💰 Financial Flow
+1. **Customer** makes the purchase
+2. **Gateway** sends data to **(sub-)acquirer**
+3. **Acquirer** sends to **brand (Visa, Master)**
+4. **Brand** consults the **issuer** (customer's bank)
+5. Response: **authorization or denial**
+6. Settlement → value to **merchant**
+
+### 📡 Information Flow
+- Transactions traffic through multiple players
+- Logs and metadata feed anti-fraud systems
+
+### 🧱 Differences between Players
+| Player | Function | Risk |
+|--------|--------|-------|
+| **Acquirer** | Processes and settles transactions | Assumes risk |
+| **Sub-acquirer** | Intermediates merchants | Partial risk |
+| **Gateway** | Only routes requests | Does not assume risk |
+
+### ⚠️ Chargebacks
+- **Chargeback**: forced return of value to customer (dispute or fraud)
+- **Cancellation**: voluntary reversal
+- High chargeback rate → indicator of **fraud** or **operational inefficiency**
+
+### 🧠 Anti-fraud
+- System that analyzes transactions in real time
+- Calculates score based on rules and models
+- Triggers manual review, blocking or approval
+
+---
+
+## 📚 Technologies Used
+- **Python 3.11**
+- **Pandas / NumPy** (data analysis)
+- **Matplotlib / Seaborn** (visualization)
+- **Scikit-learn** (ML, preprocessing)
+
+---
+
+## 🧾 Conclusion
+The analysis demonstrated that **simple statistical patterns**, combined with **machine learning models** and **business rules**, are capable of identifying **potentially fraudulent behaviors**.
+The next step is **integrating these insights** into an **operational anti-fraud pipeline**, with **supervised models** and **continuous review based on chargebacks**.
+
+---
+
+## 👤 Author
+**João Victor Cardoso**
+📧 [joaovictorcs.20@gmail.com]
+💼 [[LinkedIn](https://www.linkedin.com/in/jo%C3%A3o-victor-cardoso/) / [GitHub](https://github.com/joaovcardosodev) ]
+
+--- 
+
+**PT**
+
 # 🕵️‍♂️ Risk Analyst Case – Detecção de Comportamentos Suspeitos e Solução Antifraude
 
 ## 📌 Objetivo
@@ -6,21 +217,19 @@ Este projeto tem como objetivo analisar uma base de **transações hipotéticas*
 ---
 
 ## 📁 Estrutura do Projeto
-├── data
-  ├── raw
-      
-      
-      
-      
-      ├── transactional-sample.csv # Base de dados fornecida
-  ├── processed
-      ├── test_processed.csv # Base de teste processada
-      ├── train_processed.csv # Base de treino processada
-├── notebooks
-  ├── eda_feature_engineering.ipynb # Notebook de exploração de feature engineering
-  ├── train_model.ipynb # Notebook para treinamento e avaliação de modelos ML
+├── data/
+│ ├── raw/
+| │ ├── transactional-sample.csv # Base de dados fornecida
+│ ├── processed/
+| │ ├── device_worst.csv # Blacklist de dispositivos
+| │ ├── merchant_worst.csv # Blacklist de comerciantes
+| │ ├── user_worst.csv # Blacklist de usuários
+| │ ├── train_processed.csv # Base de treino processada
+| │ ├── train_processed.csv # Base de treino processada
+├── notebooks/
+│ ├── eda_feature_engineering.ipynb # Notebook de exploração de feature engineering
+│ ├── train_model.ipynb # Notebook para treinamento e avaliação de modelos ML  
 ├── README.md # Este documento
-
 
 ---
 
@@ -148,6 +357,8 @@ O algortimo que obteve o melhor desempenho foi o **XGBoost** com as seguintes m�
   3. Cálculo de score
   4. Decisão automática (aprovar / revisar / bloquear)
 - **Feedback loop** com chargebacks para re-treinar modelos.
+
+O caso de uso está localizado no notebook **train_model.csv** com analise de ponto de corte e valores reais
 
 ---
 
