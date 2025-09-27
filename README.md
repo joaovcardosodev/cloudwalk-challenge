@@ -8,6 +8,10 @@ Este projeto tem como objetivo analisar uma base de **transações hipotéticas*
 ## 📁 Estrutura do Projeto
 ├── data
   ├── raw
+      
+      
+      
+      
       ├── transactional-sample.csv # Base de dados fornecida
   ├── processed
       ├── test_processed.csv # Base de teste processada
@@ -108,7 +112,7 @@ O algortimo que obteve o melhor desempenho foi o **XGBoost** com as seguintes m�
 ### Métricas basicas:
 
 | Métrica | Valor |
--------------------
+| --------|---------- |
 | `Accuracy` | 0.9313 |
 | `Precision` | 0.9048 |
 | `Recall` | 0.4872 |
