@@ -151,8 +151,8 @@ The algorithm that obtained the best performance was **XGBoost** with the follow
 - Block or review **repeat devices** (blacklist).
 
 ### 🤖 Medium Term (Modeling)
-- Train **supervised model** (Isolation Forest / XGBoost) with created features.
-- Use **risk score system** with thresholds.
+- Train **supervised model** (XGBoost) with created features.
+- Use **risk score system** with thresholds + businesse rules like the blacklists.
 
 ### 🧠 Long Term (Architecture)
 - **Real-time pipeline** with:
@@ -162,11 +162,14 @@ The algorithm that obtained the best performance was **XGBoost** with the follow
   4. Automatic decision (approve / review / block)
 - **Feedback loop** with chargebacks to retrain models.
 
-The use case is located in the **train_model.csv** notebook with cut-point analysis and actual values
+---
+
+## 💡 5. Conclusion (Best case scenario)
+The use case located in **train_model.csv** shows that using a cutoff point on the worst 1% scores with the trained XGBoost model and filtering out blacklisted users, merchants, and devices, was able to detect **92%** of the frauds in the test base while sacrificing only **12%** of the total base, which minimizes the impact on operations.
 
 ---
 
-## 🏦 5. Payment Industry Context
+## 🏦 6. Payment Industry Context
 
 ### 💰 Financial Flow
 1. **Customer** makes the purchase
@@ -204,12 +207,6 @@ The use case is located in the **train_model.csv** notebook with cut-point analy
 - **Pandas / NumPy** (data analysis)
 - **Matplotlib / Seaborn** (visualization)
 - **Scikit-learn** (ML, preprocessing)
-
----
-
-## 🧾 Conclusion
-The analysis demonstrated that **simple statistical patterns**, combined with **machine learning models** and **business rules**, are capable of identifying **potentially fraudulent behaviors**.
-The next step is **integrating these insights** into an **operational anti-fraud pipeline**, with **supervised models** and **continuous review based on chargebacks**.
 
 ---
 
@@ -384,11 +381,14 @@ O algortimo que obteve o melhor desempenho foi o **XGBoost** com as seguintes m�
   4. Decisão automática (aprovar / revisar / bloquear)
 - **Feedback loop** com chargebacks para re-treinar modelos.
 
-O caso de uso está localizado no notebook **train_model.csv** com analise de ponto de corte e valores reais
+---
+
+## 💡 5. Conclusão (Melhor cenário possível)
+O caso de uso localizado em **train_model.csv** mostra que usar um ponto de corte nas piores pontuações de 1% com o modelo XGBoost treinado e filtrar usuários, comerciantes e dispositivos na lista negra foi capaz de detectar **92%** das fraudes na base de teste, sacrificando apenas **12%** da base total, o que minimiza o impacto nas operações.
 
 ---
 
-## 🏦 5. Contexto da Indústria de Pagamentos
+## 🏦 6. Contexto da Indústria de Pagamentos
 
 ### 💰 Fluxo Financeiro
 1. **Cliente** realiza a compra  
@@ -426,12 +426,6 @@ O caso de uso está localizado no notebook **train_model.csv** com analise de po
 - **Pandas / NumPy** (análise de dados)
 - **Matplotlib / Seaborn** (visualização)
 - **Scikit-learn** (ML, pré-processamento)
-
----
-
-## 🧾 Conclusão
-A análise demonstrou que **padrões estatísticos simples**, combinados com **modelos de machine learning** e **regras de negócio**, são capazes de identificar **comportamentos potencialmente fraudulentos**.  
-O próximo passo é a **integração desses insights** em um **pipeline antifraude operacional**, com **modelos supervisionados** e **revisão contínua baseada em chargebacks**.
 
 ---
 
